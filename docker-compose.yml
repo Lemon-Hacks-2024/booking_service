@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+
+  booking_service:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: booking_service
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: any
+    env_file:
+      - .env
+    environment:
+      - "GIN_MODE=release"
+    ports:
+      - "11500:8080"
