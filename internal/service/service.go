@@ -19,6 +19,7 @@ type Train interface {
 
 type BookedTicket interface {
 	Create(ticket entity.BookedTicket) (int, error)
+	SendToRabbitMQ(income entity.Income, queueName string, amqpURI string) error
 }
 
 type Service struct {

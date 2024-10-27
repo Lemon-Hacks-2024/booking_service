@@ -5,6 +5,9 @@ import (
 	"os"
 )
 
+// RabbitURI для подключения к RabbitMQ
+const RabbitURI = "amqp://tickerbackendapp:vuL7(*Ym9+zjS=U~@79.174.81.22:5672/"
+
 type Config struct {
 	AppPort         string
 	DBHost          string

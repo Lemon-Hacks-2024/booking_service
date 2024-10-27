@@ -89,11 +89,15 @@ func (s *AxTrainService) GetWagonsByTrain(trainID int) ([]entity.Wagon, error) {
 			})
 		}
 
-		wagons = append(wagons, entity.Wagon{
+		newWagon := entity.Wagon{
 			WagonID: wagon.WagonID,
 			Type:    wagon.Type,
 			Seats:   seats,
-		})
+		}
+
+		newWagon.UpdateAvailableSeats()
+
+		wagons = append(wagons, newWagon)
 	}
 
 	return wagons, nil
@@ -150,6 +154,7 @@ func (s *AxTrainService) GetAllTrains(queryParam entity.TrainsInputQueryParam) (
 			return nil, err
 		}
 		AxTrainToken = token
+		time.Sleep(200 * time.Millisecond)
 		return s.GetAllTrains(queryParam)
 	}
 

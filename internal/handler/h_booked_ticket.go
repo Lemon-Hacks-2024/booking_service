@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"booking_service/configs"
 	"booking_service/internal/entity"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -61,4 +62,46 @@ func (h *Handler) CreateBookedTicket(ctx *gin.Context) {
 		//Details: id,
 	})
 	return
+}
+
+func (h *Handler) CreateQueueBookedTicket(ctx *gin.Context) {
+	// Получения токена из заголовков запроса
+	token := ctx.GetHeader("Authorization")
+	if token == "" {
+		log.Println("empty token")
+		ctx.JSON(400, Response{
+			Error: "empty token",
+		})
+		return
+	}
+
+	// Проверка токена
+	user, err := h.services.User.GetUserByToken(token)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(400, Response{
+			Error: "invalid token",
+		})
+		return
+	}
+	log.Println(user)
+
+	// Отправка в очередь RabbitMQ
+	err = h.services.BookedTicket.SendToRabbitMQ(entity.Income{
+		TrainID: 1,
+		SeatID:  1,
+	}, "auto_booking", configs.RabbitURI)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(400, Response{
+			Error: "invalid request",
+		})
+		return
+	}
+
+	// Отправка ответа
+	ctx.JSON(200, Response{
+		Message: "OK",
+		Details: user,
+	})
 }
